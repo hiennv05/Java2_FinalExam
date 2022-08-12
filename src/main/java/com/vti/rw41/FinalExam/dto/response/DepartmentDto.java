@@ -21,10 +21,10 @@ public class DepartmentDto {
 
     private LocalDate create_date;
 
-    private List<AccountDto> accountDto;
+    private List<AccountDTO> accounts;
     @Data
     @NoArgsConstructor
-    static class AccountDto {
+    static class AccountDTO{
         private Integer id;
         private String user_name;
     }

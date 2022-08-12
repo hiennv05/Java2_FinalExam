@@ -4,9 +4,10 @@ import com.vti.rw41.FinalExam.dto.request.AccountRequest;
 import com.vti.rw41.FinalExam.entity.Account;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-
+@Service
 public interface IAccountService {
     public Page<Account> getAllAccounts(Pageable pageable);
 
