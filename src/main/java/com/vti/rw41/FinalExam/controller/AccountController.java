@@ -3,6 +3,7 @@ package com.vti.rw41.FinalExam.controller;
 import com.vti.rw41.FinalExam.dto.request.AccountRequest;
 import com.vti.rw41.FinalExam.dto.response.AccountDto;
 import com.vti.rw41.FinalExam.entity.Account;
+import com.vti.rw41.FinalExam.form.AccountFilterForm;
 import com.vti.rw41.FinalExam.service.AccountServiceImp;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -26,8 +27,10 @@ public class AccountController {
     ModelMapper modelMapper;
 
     @GetMapping
-    public Page<AccountDto> getAllAccounts(Pageable pageable) {
-        Page<Account> entity = service.getAllAccounts(pageable);
+    public Page<AccountDto> getAllAccounts(Pageable pageable,
+                                           @RequestParam(value = "search", required = false) String search,
+                                           AccountFilterForm filterForm) {
+        Page<Account> entity = service.getAllAccounts(pageable, search, filterForm);
 
         List<AccountDto> dto = modelMapper.map(entity.getContent(),
                 new TypeToken<List<AccountDto>>() {

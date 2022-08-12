@@ -2,10 +2,13 @@ package com.vti.rw41.FinalExam.service;
 
 import com.vti.rw41.FinalExam.dto.request.AccountRequest;
 import com.vti.rw41.FinalExam.entity.Account;
+import com.vti.rw41.FinalExam.form.AccountFilterForm;
 import com.vti.rw41.FinalExam.repository.IAccountRepository;
+import com.vti.rw41.FinalExam.specification.AccountSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -16,9 +19,14 @@ public class AccountServiceImp implements IAccountService {
     IAccountRepository repository;
 
     @Override
-    public Page<Account> getAllAccounts(Pageable pageable) {
-        return repository.findAll(pageable);
+    public Page<Account> getAllAccounts(Pageable pageable,
+                                        String search,
+                                        AccountFilterForm filterForm) {
+        Specification<Account> where = AccountSpecification.buildWhere(search, filterForm);
+        return repository.findAll(where, pageable);
     }
+
+
     @Override
     public Optional<Account> getAccountById(Integer id) {
         return repository.findById(id);
