@@ -27,7 +27,10 @@ public class AccountSpecification {
         if (!StringUtils.isEmpty(search)) {
             search = search.trim();
             CustomSpecification name = new CustomSpecification("user_name", search);
-            where = Specification.where(name);
+            CustomSpecification first_name = new CustomSpecification("first_name", search);
+            CustomSpecification last_name = new CustomSpecification("last_name", search);
+
+            where = Specification.where(name).or(first_name).or(last_name);
 
         }
         if (filterForm != null && filterForm.getMinId() != null) {
@@ -46,13 +49,28 @@ public class AccountSpecification {
                 where = where.and(maxId);
             }
         }
+        if(filterForm != null && filterForm.getRole() != null) {
+            CustomSpecification role = new CustomSpecification("role" , filterForm.getRole());
+            if(where == null) {
+                where = role;
+            }else  {
+                where = where.and(role);
+            }
+        }
+        if(filterForm != null && filterForm.getDepartmentName() != null) {
+            CustomSpecification departmentName = new CustomSpecification("departmentName", filterForm.getDepartmentName());
+            if(where == null) {
+                where = departmentName;
+            }else  {
+                where = where.and(departmentName);
+            }
+        }
         return where;
     }
 
     @SuppressWarnings("serial")
     @RequiredArgsConstructor
-    static
-    class CustomSpecification implements Specification<Account> {
+    static class CustomSpecification implements Specification<Account> {
         @NonNull
         private String field;
 
@@ -67,12 +85,25 @@ public class AccountSpecification {
             if (field.equalsIgnoreCase("user_name")) {
                 return criteriaBuilder.like(root.get("user_name"), "%" + value.toString() + "%");
             }
+            if (field.equalsIgnoreCase("first_name")) {
+                return criteriaBuilder.like(root.get("first_name"), "%" + value.toString() + "%");
+            }
+            if (field.equalsIgnoreCase("last_name")) {
+                return criteriaBuilder.like(root.get("last_name"), "%" + value.toString() + "%");
+            }
             if (field.equalsIgnoreCase("minId")) {
                 return criteriaBuilder.greaterThanOrEqualTo(root.get("id"), value.toString());
             }
             if (field.equalsIgnoreCase("maxId")) {
                 return criteriaBuilder.lessThanOrEqualTo(root.get("id"), value.toString());
             }
+            if (field.equalsIgnoreCase("role")) {
+                return criteriaBuilder.equal(root.get("role"), value);
+            }
+            if (field.equalsIgnoreCase("departmentName")) {
+                return criteriaBuilder.equal(root.get("department").get("name"), value.toString());
+            }
+
             return null;
         }
     }

@@ -27,8 +27,8 @@ public class DepartmentController {
     ModelMapper modelMapper;
 
     @RequestMapping(method = RequestMethod.GET)
-    public Page<DepartmentDto> getAllDepartments(Pageable pageable) {
-        Page<Department> entity = service.getAllDepartments(pageable);
+    public Page<DepartmentDto> getAllDepartments(Pageable pageable, String search) {
+        Page<Department> entity = service.getAllDepartments(pageable, search);
 
         List<DepartmentDto> dto = modelMapper.map(entity.getContent(),
                 new TypeToken<List<DepartmentDto>>() {

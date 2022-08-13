@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Service
 public interface IDepartmentService {
-    Page<Department> getAllDepartments(Pageable pageable);
+    Page<Department> getAllDepartments(Pageable pageable, String search);
 
     Optional<Department> getDepartmentById(Integer id);
 }

@@ -16,7 +16,7 @@ public class DepartmentServiceImp implements IDepartmentService {
     IDepartmentRepository repository;
 
     @Override
-    public Page<Department> getAllDepartments(Pageable pageable) {
+    public Page<Department> getAllDepartments(Pageable pageable, String search) {
         return repository.findAll(pageable);
     }
 
