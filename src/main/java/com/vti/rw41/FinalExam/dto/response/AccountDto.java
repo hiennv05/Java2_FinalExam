@@ -13,12 +13,10 @@ public class AccountDto {
     private Integer id;
 
     @NonNull
-    @JsonProperty("username")
-    private String user_name;
+    private String username;
 
     @NonNull
-    @JsonProperty("fullname")
-    private String full_name;
+    private String fullname;
 
     @NonNull
     private String role;

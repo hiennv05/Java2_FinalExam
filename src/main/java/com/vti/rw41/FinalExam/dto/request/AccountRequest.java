@@ -1,24 +1,29 @@
 package com.vti.rw41.FinalExam.dto.request;
 
-import com.vti.rw41.FinalExam.entity.Department;
-import com.vti.rw41.FinalExam.enumurations.RoleAcccount;
+
 import com.vti.rw41.FinalExam.validation.Password;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.validation.constraints.NotNull;
 
 @Data
+@NoArgsConstructor
 public class AccountRequest {
+
+    private Integer id;
+
     @NotNull
-    private String user_name;
+    private String username;
 
-    private String first_name;
+    private String firstname;
 
-    private String last_name;
+    private String lastname;
 
     @Password
     private String password;
 
-    private RoleAcccount role;
+    private String role;
 
-    private Department department;
+    private Integer departmentId;
 }

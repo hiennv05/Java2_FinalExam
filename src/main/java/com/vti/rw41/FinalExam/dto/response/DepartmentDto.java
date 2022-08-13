@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -21,6 +20,7 @@ public class DepartmentDto {
     private String type;
 
     private Integer total_member;
+
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date create_date;
 

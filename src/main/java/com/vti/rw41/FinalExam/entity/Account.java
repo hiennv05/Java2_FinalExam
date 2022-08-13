@@ -20,17 +20,17 @@ public class Account {
     @Column(name= "id")
     private Integer id;
 
-    @Column( nullable = false, unique = false, length= 100)
-    private String user_name;
+    @Column( name= "user_name", nullable = false, unique = false, length= 100)
+    private String username;
 
-    @Column( nullable = false, unique = false, length= 50)
-    private String first_name;
+    @Column( name= "first_name",nullable = false, unique = false, length= 50)
+    private String firstname;
 
-    @Column( nullable = false, unique = false, length= 50)
-    private String last_name;
+    @Column(name= "last_name", nullable = false, unique = false, length= 50)
+    private String lastname;
 
     @Formula(value = "concat(first_name, ' ' , last_name)")
-    private String full_name;
+    private String fullname;
 
     private String password;
     @Enumerated(EnumType.STRING)
