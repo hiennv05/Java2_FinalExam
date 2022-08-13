@@ -4,6 +4,7 @@ import com.vti.rw41.FinalExam.enumurations.RoleDepartment;
 import lombok.Data;
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -20,7 +21,7 @@ public class Department {
 
     private Integer total_member;
 
-    private LocalDate create_date;
+    private Date create_date;
 
     @OneToMany(mappedBy = "department")
     private List<Account> accounts;

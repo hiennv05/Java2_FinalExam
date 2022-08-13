@@ -2,6 +2,7 @@ package com.vti.rw41.FinalExam.controller;
 
 import com.vti.rw41.FinalExam.dto.response.DepartmentDto;
 import com.vti.rw41.FinalExam.entity.Department;
+import com.vti.rw41.FinalExam.form.DepartmentFilterForm;
 import com.vti.rw41.FinalExam.service.DepartmentServiceImp;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -27,8 +28,8 @@ public class DepartmentController {
     ModelMapper modelMapper;
 
     @RequestMapping(method = RequestMethod.GET)
-    public Page<DepartmentDto> getAllDepartments(Pageable pageable, String search) {
-        Page<Department> entity = service.getAllDepartments(pageable, search);
+    public Page<DepartmentDto> getAllDepartments(Pageable pageable, String search, DepartmentFilterForm filterForm) {
+        Page<Department> entity = service.getAllDepartments(pageable, search, filterForm);
 
         List<DepartmentDto> dto = modelMapper.map(entity.getContent(),
                 new TypeToken<List<DepartmentDto>>() {
