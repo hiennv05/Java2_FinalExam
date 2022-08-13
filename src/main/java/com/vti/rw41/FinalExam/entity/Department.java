@@ -19,9 +19,11 @@ public class Department {
     @Enumerated(EnumType.STRING)
     private RoleDepartment type;
 
-    private Integer total_member;
+    @Column(name = "total_member")
+    private Integer totalmember;
 
-    private Date create_date;
+    @Column(name = "create_date")
+    private Date createdate;
 
     @OneToMany(mappedBy = "department")
     private List<Account> accounts;

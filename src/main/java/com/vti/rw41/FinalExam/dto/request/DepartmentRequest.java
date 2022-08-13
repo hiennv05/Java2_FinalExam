@@ -1,9 +1,12 @@
 package com.vti.rw41.FinalExam.dto.request;
 
+import com.vti.rw41.FinalExam.entity.Account;
 import com.vti.rw41.FinalExam.enumurations.RoleDepartment;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
+
 @Data
 
 public class DepartmentRequest {
@@ -16,4 +19,11 @@ public class DepartmentRequest {
     private Integer total_member;
 
     private LocalDate create_date;
+
+    private List<Account> accounts;
+
+    public static class Account {
+        private String name;
+    }
+
 }
