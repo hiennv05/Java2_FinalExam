@@ -26,9 +26,9 @@ public class AccountSpecification {
 
         if (!StringUtils.isEmpty(search)) {
             search = search.trim();
-            CustomSpecification name = new CustomSpecification("user_name", search);
-            CustomSpecification first_name = new CustomSpecification("first_name", search);
-            CustomSpecification last_name = new CustomSpecification("last_name", search);
+            CustomSpecification name = new CustomSpecification("username", search);
+            CustomSpecification first_name = new CustomSpecification("firstname", search);
+            CustomSpecification last_name = new CustomSpecification("lastname", search);
 
             where = Specification.where(name).or(first_name).or(last_name);
 
@@ -82,14 +82,14 @@ public class AccountSpecification {
         public Predicate toPredicate(Root<Account> root,
                                      CriteriaQuery<?> query,
                                      CriteriaBuilder criteriaBuilder) {
-            if (field.equalsIgnoreCase("user_name")) {
-                return criteriaBuilder.like(root.get("user_name"), "%" + value.toString() + "%");
+            if (field.equalsIgnoreCase("username")) {
+                return criteriaBuilder.like(root.get("username"), "%" + value.toString() + "%");
             }
-            if (field.equalsIgnoreCase("first_name")) {
-                return criteriaBuilder.like(root.get("first_name"), "%" + value.toString() + "%");
+            if (field.equalsIgnoreCase("firstname")) {
+                return criteriaBuilder.like(root.get("firstname"), "%" + value.toString() + "%");
             }
-            if (field.equalsIgnoreCase("last_name")) {
-                return criteriaBuilder.like(root.get("last_name"), "%" + value.toString() + "%");
+            if (field.equalsIgnoreCase("lastname")) {
+                return criteriaBuilder.like(root.get("lastname"), "%" + value.toString() + "%");
             }
             if (field.equalsIgnoreCase("minId")) {
                 return criteriaBuilder.greaterThanOrEqualTo(root.get("id"), value.toString());

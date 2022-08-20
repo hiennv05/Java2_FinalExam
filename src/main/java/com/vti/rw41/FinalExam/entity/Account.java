@@ -7,13 +7,14 @@ import lombok.Setter;
 import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Data
 @Entity
 @Getter
 @Setter
 @Table(name = "`Account`")
-public class Account {
+public class Account implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +34,7 @@ public class Account {
     private String fullname;
 
     private String password;
+
     @Enumerated(EnumType.STRING)
     private RoleAcccount role;
 

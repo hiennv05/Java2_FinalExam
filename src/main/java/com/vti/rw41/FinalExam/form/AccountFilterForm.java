@@ -7,8 +7,12 @@ import lombok.RequiredArgsConstructor;
 @Data
 @RequiredArgsConstructor
 public class AccountFilterForm {
+
     private Integer minId;
+
     private Integer maxId;
+
     private RoleAcccount role;
+
     private String departmentName;
 }

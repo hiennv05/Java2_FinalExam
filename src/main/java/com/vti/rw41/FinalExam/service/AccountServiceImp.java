@@ -1,22 +1,30 @@
 package com.vti.rw41.FinalExam.service;
 
 import com.vti.rw41.FinalExam.dto.request.AccountRequest;
+import com.vti.rw41.FinalExam.dto.request.LoginRequest;
 import com.vti.rw41.FinalExam.entity.Account;
 import com.vti.rw41.FinalExam.entity.Department;
 import com.vti.rw41.FinalExam.enumurations.RoleAcccount;
 import com.vti.rw41.FinalExam.form.AccountFilterForm;
 import com.vti.rw41.FinalExam.repository.IAccountRepository;
+import com.vti.rw41.FinalExam.repository.IDepartmentRepository;
+import com.vti.rw41.FinalExam.security.JwtTokenProvider;
 import com.vti.rw41.FinalExam.specification.AccountSpecification;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class AccountServiceImp implements IAccountService {
@@ -28,6 +36,15 @@ public class AccountServiceImp implements IAccountService {
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
+    @Autowired
+    IDepartmentRepository departmentRepository;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     @Override
     public Page<Account> getAllAccounts(Pageable pageable,
@@ -45,8 +62,19 @@ public class AccountServiceImp implements IAccountService {
     @Override
     @Transactional
     public Account addAccount(AccountRequest accountRequest) {
-        Account account = modelMapper.map(accountRequest, Account.class);
-        return repository.save(account);
+//        Account account = modelMapper.map(accountRequest, Account.class);
+//        return repository.save(account);
+        Account entity = new Account();
+        entity.setUsername(accountRequest.getUsername());
+        entity.setFirstname(accountRequest.getFirstname());
+        entity.setLastname(accountRequest.getLastname());
+        entity.setFullname(accountRequest.getFirstname() + " " + accountRequest.getLastname());
+        entity.setPassword("123456A");
+        entity.setRole(RoleAcccount.EMPLOYEE);
+        Department department1 = departmentRepository.findById(accountRequest.getDepartmentId()).orElse(null);
+        entity.setDepartment(department1);
+
+        return repository.save(entity);
     }
 
     @Override
@@ -58,18 +86,52 @@ public class AccountServiceImp implements IAccountService {
             entity.setFirstname(accountRequest.getFirstname());
             entity.setLastname(accountRequest.getLastname());
             entity.setFullname(accountRequest.getFirstname() + " " + accountRequest.getLastname());
-            entity.setRole(RoleAcccount.valueOf(accountRequest.getRole()));
-            Department department = new Department();
-            department.setId( accountRequest.getDepartmentId());
-            entity.setDepartment(department);
+            entity.setRole(RoleAcccount.MANAGER);
+            Department department1 = departmentRepository.findById(accountRequest.getDepartmentId()).orElse(null);
+            entity.setDepartment(department1);
         });
         return oldAccount;
     }
 
+//    @Transactional
+//    public Optional<Account> deleteAccount(Integer id) {
+//        Optional<Account> account = repository.findById(id);
+//        account.ifPresent(a -> repository.delete(a));
+//        return account;
+//    }
+
+    @Override
+    public ResponseEntity<String> login(LoginRequest request) {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
+            if (passwordEncoder.matches(request.getPassword(), userDetails.getPassword())) {
+                String token = jwtTokenProvider.createToken(request.getUsername(), userDetails.getAuthorities());
+                return ResponseEntity.ok(token);
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     @Transactional
-    public Optional<Account> deleteAccount(Integer id) {
-        Optional<Account> account = repository.findById(id);
-        account.ifPresent(a -> repository.delete(a));
-        return account;
+    public Account registerAccount(AccountRequest request) {
+
+        Account accountEntity = new Account();
+
+        accountEntity.setUsername(request.getUsername());
+        accountEntity.setFirstname(request.getFirstname());
+        accountEntity.setLastname(request.getLastname());
+        accountEntity.setFullname(request.getFirstname() + " " + request.getLastname());
+
+       // Default password 123456A
+        String encode = passwordEncoder.encode("123456A");
+        accountEntity.setPassword(encode);
+
+        accountEntity.setRole(RoleAcccount.EMPLOYEE);
+        repository.save(accountEntity);
+        return accountEntity;
+    }
+
+    public void deleteByIdIn(Set<Integer> ids) {
+       Set<Account> accounts = repository.findByIdIn(ids);
+       accounts.forEach(account -> {
+           repository.delete(account);
+       });
     }
 }

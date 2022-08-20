@@ -1,5 +1,6 @@
 package com.vti.rw41.FinalExam;
 
+import org.hibernate.dialect.HSQLDialect;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

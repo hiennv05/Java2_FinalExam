@@ -5,8 +5,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collection;
+import java.util.Set;
 
 @Repository
 public interface IAccountRepository extends JpaRepository<Account, Integer> {
@@ -15,6 +20,15 @@ public interface IAccountRepository extends JpaRepository<Account, Integer> {
 
     Page<Account> findAll(Specification<Account> where, Pageable pageable);
 
-   // @Query("SELECT a.role, a.user_name, a.password FROM Account a WHERE a.user_name = ?1")
     Account findByUsername(String username);
+//    @Transactional
+//    @Modifying
+//    void deleteByIdIn(Set<Integer> ids);
+
+//    @Transactional
+//    @Modifying
+//    @Query("delete from Account a where a.id in ?1")
+//    void deleteByIdIn(Set<Integer> ids);
+
+    Set<Account> findByIdIn(Set<Integer> ids);
 }
