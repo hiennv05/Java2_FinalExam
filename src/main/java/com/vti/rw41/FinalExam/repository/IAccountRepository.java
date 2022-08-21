@@ -21,9 +21,9 @@ public interface IAccountRepository extends JpaRepository<Account, Integer> {
     Page<Account> findAll(Specification<Account> where, Pageable pageable);
 
     Account findByUsername(String username);
-//    @Transactional
-//    @Modifying
-//    void deleteByIdIn(Set<Integer> ids);
+    @Transactional
+    @Modifying
+    void deleteByIdIn(Set<Integer> ids);
 
 //    @Transactional
 //    @Modifying

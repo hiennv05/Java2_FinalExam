@@ -32,9 +32,6 @@ public class AccountServiceImp implements IAccountService {
     IAccountRepository repository;
 
     @Autowired
-    ModelMapper modelMapper;
-
-    @Autowired
     PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -47,6 +44,35 @@ public class AccountServiceImp implements IAccountService {
     private UserDetailsService userDetailsService;
 
     @Override
+    public ResponseEntity<String> login(LoginRequest request) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
+        if (passwordEncoder.matches(request.getPassword(), userDetails.getPassword())) {
+            String token = jwtTokenProvider.createToken(request.getUsername(), userDetails.getAuthorities());
+            return ResponseEntity.ok(token);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @Transactional
+    public Account registerAccount(AccountRequest request) {
+
+        Account accountEntity = new Account();
+
+        accountEntity.setUsername(request.getUsername());
+        accountEntity.setFirstname(request.getFirstname());
+        accountEntity.setLastname(request.getLastname());
+        accountEntity.setFullname(request.getFirstname() + " " + request.getLastname());
+
+        // Default password 123456A
+        String encode = passwordEncoder.encode("123456A");
+        accountEntity.setPassword(encode);
+
+        accountEntity.setRole(RoleAcccount.EMPLOYEE);
+        repository.save(accountEntity);
+        return accountEntity;
+    }
+
+    @Override
     public Page<Account> getAllAccounts(Pageable pageable,
                                         String search,
                                         AccountFilterForm filterForm) {
@@ -54,22 +80,25 @@ public class AccountServiceImp implements IAccountService {
         return repository.findAll(where, pageable);
     }
 
-
     @Override
     public Optional<Account> getAccountById(Integer id) {
         return repository.findById(id);
     }
+
     @Override
     @Transactional
     public Account addAccount(AccountRequest accountRequest) {
-//        Account account = modelMapper.map(accountRequest, Account.class);
-//        return repository.save(account);
+
         Account entity = new Account();
         entity.setUsername(accountRequest.getUsername());
         entity.setFirstname(accountRequest.getFirstname());
         entity.setLastname(accountRequest.getLastname());
         entity.setFullname(accountRequest.getFirstname() + " " + accountRequest.getLastname());
-        entity.setPassword("123456A");
+
+        // Default password 123456A
+        String encode = passwordEncoder.encode("123456A");
+        entity.setPassword(encode);
+
         entity.setRole(RoleAcccount.EMPLOYEE);
         Department department1 = departmentRepository.findById(accountRequest.getDepartmentId()).orElse(null);
         entity.setDepartment(department1);
@@ -86,52 +115,19 @@ public class AccountServiceImp implements IAccountService {
             entity.setFirstname(accountRequest.getFirstname());
             entity.setLastname(accountRequest.getLastname());
             entity.setFullname(accountRequest.getFirstname() + " " + accountRequest.getLastname());
-            entity.setRole(RoleAcccount.MANAGER);
+            entity.setRole(RoleAcccount.EMPLOYEE);
             Department department1 = departmentRepository.findById(accountRequest.getDepartmentId()).orElse(null);
             entity.setDepartment(department1);
         });
         return oldAccount;
     }
 
-//    @Transactional
-//    public Optional<Account> deleteAccount(Integer id) {
-//        Optional<Account> account = repository.findById(id);
-//        account.ifPresent(a -> repository.delete(a));
-//        return account;
-//    }
+//       Set<Account> accounts = repository.findByIdIn(ids);
+//       accounts.forEach(account -> {
+//           repository.delete(account);
 
-    @Override
-    public ResponseEntity<String> login(LoginRequest request) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
-            if (passwordEncoder.matches(request.getPassword(), userDetails.getPassword())) {
-                String token = jwtTokenProvider.createToken(request.getUsername(), userDetails.getAuthorities());
-                return ResponseEntity.ok(token);
-            }
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
     @Transactional
-    public Account registerAccount(AccountRequest request) {
-
-        Account accountEntity = new Account();
-
-        accountEntity.setUsername(request.getUsername());
-        accountEntity.setFirstname(request.getFirstname());
-        accountEntity.setLastname(request.getLastname());
-        accountEntity.setFullname(request.getFirstname() + " " + request.getLastname());
-
-       // Default password 123456A
-        String encode = passwordEncoder.encode("123456A");
-        accountEntity.setPassword(encode);
-
-        accountEntity.setRole(RoleAcccount.EMPLOYEE);
-        repository.save(accountEntity);
-        return accountEntity;
-    }
-
     public void deleteByIdIn(Set<Integer> ids) {
-       Set<Account> accounts = repository.findByIdIn(ids);
-       accounts.forEach(account -> {
-           repository.delete(account);
-       });
+        repository.deleteByIdIn(ids);
     }
 }
