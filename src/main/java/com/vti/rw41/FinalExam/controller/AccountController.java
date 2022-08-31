@@ -2,6 +2,7 @@ package com.vti.rw41.FinalExam.controller;
 
 import com.vti.rw41.FinalExam.dto.request.AccountRequest;
 import com.vti.rw41.FinalExam.dto.request.LoginRequest;
+import com.vti.rw41.FinalExam.dto.request.ResetPasswordRequest;
 import com.vti.rw41.FinalExam.dto.response.AccountDto;
 import com.vti.rw41.FinalExam.entity.Account;
 import com.vti.rw41.FinalExam.form.AccountFilterForm;
@@ -49,16 +50,36 @@ public class AccountController {
         return service.registerAccount(request);
     }
 
-    @GetMapping
-    public Page<AccountDto> getAllAccounts(Pageable pageable,
-                                           @RequestParam(value = "search", required = false) String search,
-                                           AccountFilterForm filterForm) {
-        Page<Account> entity = service.getAllAccounts(pageable, search, filterForm);
+    @PostMapping("/forgot/{userName}")
+    public void forgotPassword(@PathVariable String userName) {
+        service.forgotPassword(userName);
+    }
 
-        List<AccountDto> dto = modelMapper.map(entity.getContent(), new TypeToken<List<AccountDto>>() {
-        }.getType());
-        Page<AccountDto> dtoPage = new PageImpl<>(dto, pageable, entity.getTotalElements());
-        return dtoPage;
+    @PostMapping("/forgot")
+    public ResponseEntity<?> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
+        return service.resetPassword(request);
+    }
+
+//    @GetMapping
+//    public Page<AccountDto> getAllAccounts(Pageable pageable,
+//                                           @RequestParam(value = "search", required = false) String search,
+//                                           AccountFilterForm filterForm) {
+//        Page<Account> entity = service.getAllAccounts(pageable, search, filterForm);
+//
+//        List<AccountDto> dto = modelMapper.map(entity.getContent(), new TypeToken<List<AccountDto>>() {
+//        }.getType());
+//        Page<AccountDto> dtoPage = new PageImpl<>(dto, pageable, entity.getTotalElements());
+//        return dtoPage;
+//    }
+
+    @GetMapping()
+    public Page<AccountDto> getAllAccountsV2(Integer departmentId, String role, String search, Pageable pageable) {
+        Page<Account> entity = service.getAllAccountsV2(departmentId, role, search, pageable);
+
+        List<AccountDto> dto = modelMapper.map(entity.getContent(), new TypeToken<List<AccountDto>>()
+        {}.getType());
+       Page<AccountDto> dtoPage= new PageImpl<>(dto, pageable, entity.getTotalElements());
+       return dtoPage;
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.GET)

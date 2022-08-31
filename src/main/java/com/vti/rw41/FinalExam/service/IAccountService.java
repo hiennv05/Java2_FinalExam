@@ -2,6 +2,8 @@ package com.vti.rw41.FinalExam.service;
 
 import com.vti.rw41.FinalExam.dto.request.AccountRequest;
 import com.vti.rw41.FinalExam.dto.request.LoginRequest;
+import com.vti.rw41.FinalExam.dto.request.ResetPasswordRequest;
+import com.vti.rw41.FinalExam.dto.response.AccountDto;
 import com.vti.rw41.FinalExam.entity.Account;
 import com.vti.rw41.FinalExam.form.AccountFilterForm;
 import org.springframework.data.domain.Page;
@@ -28,4 +30,10 @@ public interface IAccountService {
     Account registerAccount(AccountRequest request);
 
     void deleteByIdIn(Set<Integer> ids);
+
+    void forgotPassword(String email);
+
+    ResponseEntity<?> resetPassword(ResetPasswordRequest request);
+
+    Page<Account> getAllAccountsV2(Integer departmentId, String role, String search, Pageable pageable);
 }

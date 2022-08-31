@@ -27,14 +27,18 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http.csrf().disable() // de tranh loi 403
-                .cors().disable() // de web goi duoc API
+               .cors().disable() // de web goi duoc API
                 .authorizeHttpRequests(auth -> auth
                         .antMatchers("/swagger-ui/**",
                                 "/api/v1/accounts/login",
                                 "/api/v1/accounts/register",
+                                "/api/v1/accounts/forgot",
+                                "/api/v1/accounts/forgot/**",
                                 "/v3/api-docs",
                                 "/v3/api-docs/**").permitAll() //cho phep cac URL cos pattern nhu tren truy cap ma khong can authentication
                         .antMatchers(HttpMethod.GET, "/api/v1/departments", "/api/v1/departments/**").permitAll()
+                        .antMatchers(HttpMethod.GET, "/api/v1/accounts", "/api/v1/accounts/**").permitAll()
+
                         .antMatchers(HttpMethod.POST, "/api/v1/departments", "/api/v1/departments/**").permitAll()
 
                         //cho phep cac URL cos pattern nhu tren voi method GET truy cap ma khong can authentication
@@ -43,6 +47,9 @@ public class SecurityConfiguration {
 
         http.sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 

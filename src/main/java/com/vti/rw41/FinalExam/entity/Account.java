@@ -30,7 +30,8 @@ public class Account implements Serializable {
     @Column(name= "last_name", nullable = false, unique = false, length= 50)
     private String lastname;
 
-    @Formula(value = "concat(first_name, ' ' , last_name)")
+ //   @Formula(value = "concat(first_name, ' ' , last_name)")
+    @Column(name = "full_name")
     private String fullname;
 
     private String password;
@@ -41,5 +42,7 @@ public class Account implements Serializable {
     @ManyToOne
     @JoinColumn(name = "department_id")
     private Department department;
+
+    private String lang;
 
 }

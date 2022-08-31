@@ -2,12 +2,16 @@ package com.vti.rw41.FinalExam.service;
 
 import com.vti.rw41.FinalExam.dto.request.AccountRequest;
 import com.vti.rw41.FinalExam.dto.request.LoginRequest;
+import com.vti.rw41.FinalExam.dto.request.ResetPasswordRequest;
+import com.vti.rw41.FinalExam.dto.response.AccountDto;
 import com.vti.rw41.FinalExam.entity.Account;
 import com.vti.rw41.FinalExam.entity.Department;
+import com.vti.rw41.FinalExam.entity.OtpAccount;
 import com.vti.rw41.FinalExam.enumurations.RoleAcccount;
 import com.vti.rw41.FinalExam.form.AccountFilterForm;
 import com.vti.rw41.FinalExam.repository.IAccountRepository;
 import com.vti.rw41.FinalExam.repository.IDepartmentRepository;
+import com.vti.rw41.FinalExam.repository.OtpAccountRepository;
 import com.vti.rw41.FinalExam.security.JwtTokenProvider;
 import com.vti.rw41.FinalExam.specification.AccountSpecification;
 import org.modelmapper.ModelMapper;
@@ -23,7 +27,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 
 @Service
@@ -42,6 +49,12 @@ public class AccountServiceImp implements IAccountService {
 
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @Autowired
+    OtpAccountRepository otpAccountRepository;
+
+    @Autowired
+    private SendMailService sendMailService;
 
     @Override
     public ResponseEntity<String> login(LoginRequest request) {
@@ -129,5 +142,46 @@ public class AccountServiceImp implements IAccountService {
     @Transactional
     public void deleteByIdIn(Set<Integer> ids) {
         repository.deleteByIdIn(ids);
+    }
+
+    public void forgotPassword(String userName) {
+
+        Account account = repository.findByUsername(userName);
+
+        if (account != null) {
+
+            Random rd = new SecureRandom();
+            int random = rd.nextInt(999_999);// random tu 0 -> 999_999
+            String randomStr = String.format("%06d", random);
+
+            OtpAccount otp = new OtpAccount();
+            otp.setOtp(randomStr);
+            otp.setUserName(userName);
+            otp.setExpire(LocalDateTime.now().plusMinutes(30));
+            otpAccountRepository.save(otp);
+
+            sendMailService.sendForgotPassword(account.getUsername(), randomStr, account.getLang());
+        }
+    }
+
+    @Transactional
+    public ResponseEntity<?> resetPassword(ResetPasswordRequest request) {
+        OtpAccount otp = otpAccountRepository.findByUserNameAndOtp(request.getUserName(), request.getOtp());
+        if (otp != null && otp.getExpire().isAfter(LocalDateTime.now())) { //nếu otp tồn tại và chưa hết hạn (> now)
+            Account accountEntity = repository.findByUsername(request.getUserName());
+            accountEntity.setPassword(passwordEncoder.encode(request.getPassword()));
+            repository.save(accountEntity);
+            otpAccountRepository.delete(otp);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
+    @Override
+    public Page<Account> getAllAccountsV2(Integer departmentId, String role, String search, Pageable pageable) {
+         if (search != null) {
+             search = "%" + search + "%";
+         }
+         return repository.getAllAccountsV2(departmentId, role, search, pageable);
     }
 }
